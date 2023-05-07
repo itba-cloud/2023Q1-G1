@@ -22,19 +22,35 @@ variable "environment_name" {
 variable "nextjs_export_directory" {
   description = "Static export directory of NextJS App"
   type = string
+  default = "../../frontend/out"
 }
 
 
 variable "domain_name" {
   description = "Domain name"
   type        = string
+  default = "cloudinventorymanagement.com"
 }
 
 
+variable "db_name" {
+  description = "Name of DB"
+  type        = string
+  default = "inventory"
+}
 
+variable "db_user" {
+  description = "Username for DB"
+  type        = string
+  default = "user"
+}
 
-
-
+variable "db_pass" {
+  description = "Password for DB"
+  type        = string
+  sensitive   = true
+  default = "pass"
+}
 
 
 
