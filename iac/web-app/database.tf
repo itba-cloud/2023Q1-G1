@@ -1,13 +1,46 @@
+locals {
+  partition_key = "userId"
+  sort_key      = "itemId"
+
+  attributes = {
+    name      = "S"
+    timestamp = "N"
+  }
+}
 resource "aws_dynamodb_table" "inventory_table" {
   name           = var.db_name
   billing_mode   = "PROVISIONED"
   read_capacity  = "30"
   write_capacity = "30"
   attribute {
-    name = "noteId"
+    name = local.partition_key
     type = "S"
   }
-  hash_key = "noteId"
+
+  attribute {
+    name = local.sort_key
+    type = "S"
+  }
+
+  dynamic "local_secondary_index" {
+    for_each = local.attributes
+    content {
+      name = "${local_secondary_index.key}Index"
+      range_key = local_secondary_index.key
+      projection_type = "KEYS_ONLY"
+    }
+  }
+  dynamic "attribute" {
+    for_each = local.attributes
+    content {
+
+      name = attribute.key
+      type = attribute.value
+    }
+  }
+
+  hash_key  = local.partition_key
+  range_key = local.sort_key
   point_in_time_recovery {
     enabled = true
   }
@@ -20,16 +53,16 @@ resource "aws_dynamodb_table" "inventory_table" {
 }
 
 locals {
-    read_max = 10
-    read_min = 10
-    write_max = 10
-    write_min = 10
-    read_target = 10
-    read_scalein_cd = 300
-    read_scaleout_cd = 300
-    write_target = 10
-    write_scalein_cd = 300
-    write_scaleout_cd = 300
+  read_max          = 10
+  read_min          = 10
+  write_max         = 10
+  write_min         = 10
+  read_target       = 10
+  read_scalein_cd   = 300
+  read_scaleout_cd  = 300
+  write_target      = 10
+  write_scalein_cd  = 300
+  write_scaleout_cd = 300
 }
 
 resource "aws_appautoscaling_target" "read_target" {
