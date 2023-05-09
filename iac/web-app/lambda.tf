@@ -17,9 +17,14 @@
 
 # }
 
+# resource "aws_iam_role_policy_attachment" "example_lambda_role_policy_attachment" {
+#   policy_arn = aws_iam_policy.example_lambda_policy.arn
+#   role       = aws_iam_role.example_lambda_role.name
+# } -> Se comenta porque no tenemos permisos para attachear policies o crear roles
+
 data "aws_iam_role" "lab_role" {
   name = "AWSServiceRoleForApplicationAutoScaling_DynamoDBTable"
-}
+} // Usamos un role ya existente dado que no podemos crear roles
 resource "aws_iam_policy" "example_lambda_policy" {
   name = "example-lambda-policy"
   policy = jsonencode({
@@ -38,10 +43,7 @@ resource "aws_iam_policy" "example_lambda_policy" {
   })
 }
 
-# resource "aws_iam_role_policy_attachment" "example_lambda_role_policy_attachment" {
-#   policy_arn = aws_iam_policy.example_lambda_policy.arn
-#   role       = aws_iam_role.example_lambda_role.name
-# }
+
 
 data "archive_file" "lambda" {
   type        = "zip"
@@ -49,13 +51,15 @@ data "archive_file" "lambda" {
   output_path = "index.zip"
 }
 
+
+data "aws_caller_identity" "current" {}
+
 resource "aws_lambda_function" "example_lambda" {
   function_name = "example-lambda"
   handler       = "index.handler"
   runtime       = "nodejs14.x"
   filename      = "index.zip"
-  role          = "arn:aws:iam::739329471372:role/LabRole" // este por ahora cada uno tiene que ir cambiandolo
-  // "arn:aws:iam::739329471372:role/LabRole"
+  role          = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/LabRole" // usamos LabRole porque no tenemos podemos crear roles o adjuntar policies
 
   vpc_config {
     subnet_ids         = module.vpc.private_subnets

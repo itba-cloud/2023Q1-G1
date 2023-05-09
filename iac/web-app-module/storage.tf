@@ -1,5 +1,3 @@
-# TODO: https://www.alexhyett.com/terraform-s3-static-website-hosting/
-
 
 
 # S3 bucket for website.
@@ -16,6 +14,11 @@ locals {
     www_bucket = aws_s3_bucket.www_bucket.id
     root_bucket = aws_s3_bucket.root_bucket.id
   }
+
+bucket_policies = {
+    www_bucket = templatefile("${path.module}/s3-policy.json", { bucket = "www.${var.domain_name}", account_id =  data.aws_caller_identity.current.account_id, cloudfront_id = aws_cloudfront_distribution.cf_dist.id})
+    root_bucket = templatefile("${path.module}/s3-policy.json", { bucket = "${var.domain_name}", account_id =  data.aws_caller_identity.current.account_id, cloudfront_id = aws_cloudfront_distribution.cf_dist.id})
+  }
 }
 resource "aws_s3_bucket_ownership_controls" "www_bucket" {
   for_each = local.bucket_ids
@@ -28,27 +31,32 @@ resource "aws_s3_bucket_public_access_block" "www_bucket" {
   for_each = local.bucket_ids
   bucket = each.value
 
-  block_public_acls       = false
-  block_public_policy     = false
-  ignore_public_acls      = false
-  restrict_public_buckets = false
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+
+  depends_on = [local.bucket_ids]
 }
+
+data "aws_caller_identity" "current" {}
+
+
 
 
 resource "aws_s3_bucket_policy" "www_bucket" {
   for_each = local.bucket_ids
   bucket   = each.value
 
-  policy        = templatefile("${path.module}/s3-policy.json", { bucket = "${each.key == "www_bucket" ? "www." : ""}${var.domain_name}" })
+  policy        = local.bucket_policies[each.key]
+    depends_on = [local.bucket_ids]
 
 }
 resource "aws_s3_bucket_acl" "www_bucket" {
-  depends_on = [aws_s3_bucket_ownership_controls.www_bucket, aws_s3_bucket_public_access_block.www_bucket]
   for_each = local.bucket_ids
   bucket   = each.value
   acl      = "public-read"
-
-
+  depends_on = [local.bucket_ids]
 }
 
 resource "aws_s3_bucket_cors_configuration" "www_bucket" {

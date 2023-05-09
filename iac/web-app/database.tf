@@ -25,8 +25,8 @@ resource "aws_dynamodb_table" "inventory_table" {
   dynamic "local_secondary_index" {
     for_each = local.attributes
     content {
-      name = "${local_secondary_index.key}Index"
-      range_key = local_secondary_index.key
+      name            = "${local_secondary_index.key}Index"
+      range_key       = local_secondary_index.key
       projection_type = "KEYS_ONLY"
     }
   }
@@ -50,6 +50,9 @@ resource "aws_dynamodb_table" "inventory_table" {
     // true -> use AWS Managed CMK 
     // true + key arn -> use custom key
   }
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 locals {
@@ -71,6 +74,7 @@ resource "aws_appautoscaling_target" "read_target" {
   resource_id        = "table/${var.db_name}"
   scalable_dimension = "dynamodb:table:ReadCapacityUnits"
   service_namespace  = "dynamodb"
+  depends_on = [aws_dynamodb_table.inventory_table]
 }
 
 resource "aws_appautoscaling_target" "write_target" {
@@ -79,6 +83,7 @@ resource "aws_appautoscaling_target" "write_target" {
   resource_id        = "table/${var.db_name}"
   scalable_dimension = "dynamodb:table:WriteCapacityUnits"
   service_namespace  = "dynamodb"
+  depends_on = [aws_dynamodb_table.inventory_table]
 }
 
 resource "aws_appautoscaling_policy" "read_policy" {
