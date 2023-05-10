@@ -13,8 +13,8 @@ locals {
   }
 
 bucket_policies = {
-    www = templatefile("${path.module}/s3-policy.json", { bucket = "www.${var.domain_name}", account_id =  data.aws_caller_identity.current.account_id, cloudfront_id = aws_cloudfront_distribution.website.id})
-    root = templatefile("${path.module}/s3-policy.json", { bucket = "${var.domain_name}", account_id =  data.aws_caller_identity.current.account_id, cloudfront_id = aws_cloudfront_distribution.website.id})
+    www = templatefile("${path.module}/files/s3-policy.json", { bucket = "www.${var.domain_name}", account_id =  data.aws_caller_identity.current.account_id, cloudfront_id = aws_cloudfront_distribution.website.id})
+    root = templatefile("${path.module}/files/s3-policy.json", { bucket = "${var.domain_name}", account_id =  data.aws_caller_identity.current.account_id, cloudfront_id = aws_cloudfront_distribution.website.id})
   }
 }
 resource "aws_s3_bucket_ownership_controls" "website" {
