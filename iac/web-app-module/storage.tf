@@ -13,8 +13,8 @@ locals {
   }
 
 bucket_policies = {
-    www = templatefile("${path.module}/files/s3-policy.json", { bucket = "www.${var.domain_name}", account_id =  data.aws_caller_identity.current.account_id, cloudfront_id = aws_cloudfront_distribution.website.id})
-    root = templatefile("${path.module}/files/s3-policy.json", { bucket = "${var.domain_name}", account_id =  data.aws_caller_identity.current.account_id, cloudfront_id = aws_cloudfront_distribution.website.id})
+    www = templatefile("${path.module}/files/s3-policy.json", { bucket = "www.${var.domain_name}", account_id =  data.aws_caller_identity.current.account_id, cloudfront_id = aws_cloudfront_distribution.website["www"].id})
+    root = templatefile("${path.module}/files/s3-policy.json", { bucket = "${var.domain_name}", account_id =  data.aws_caller_identity.current.account_id, cloudfront_id = aws_cloudfront_distribution.website["root"].id})
   }
 }
 resource "aws_s3_bucket_ownership_controls" "website" {
@@ -33,7 +33,23 @@ resource "aws_s3_bucket_public_access_block" "website" {
   ignore_public_acls      = false
   restrict_public_buckets = false
 
-  depends_on = [aws_s3_bucket_policy.website[0],aws_s3_bucket_policy.website[1]]
+  depends_on = [aws_s3_bucket.root,aws_s3_bucket.www]
+  lifecycle {
+    ignore_changes = [block_public_acls,block_public_policy,ignore_public_acls,restrict_public_buckets]
+  }
+}
+
+
+resource "aws_s3_bucket_public_access_block" "website_block_access" {
+  for_each = local.bucket_ids
+  bucket = each.value
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+
+  depends_on = [aws_s3_bucket_policy.website]
 }
 
 data "aws_caller_identity" "current" {}
@@ -46,13 +62,13 @@ resource "aws_s3_bucket_policy" "website" {
   bucket   = each.value
 
   policy        = local.bucket_policies[each.key]
-  depends_on = [aws_s3_bucket_acl.website[0],aws_s3_bucket_acl.website[1]]
+  depends_on = [aws_s3_bucket_acl.website]
 }
 resource "aws_s3_bucket_acl" "website" {
   for_each = local.bucket_ids
   bucket   = each.value
   acl      = "public-read"
-  depends_on = [aws_s3_bucket.root,aws_s3_bucket.www]
+  depends_on = [aws_s3_bucket_public_access_block.website[0],aws_s3_bucket_public_access_block.website[1]]
 }
 
 resource "aws_s3_bucket_cors_configuration" "website" {
@@ -60,7 +76,7 @@ resource "aws_s3_bucket_cors_configuration" "website" {
   cors_rule {
     allowed_headers = ["Authorization", "Content-Length"]
     allowed_methods = ["GET", "POST"]
-    allowed_origins = ["*","https://www.${var.domain_name}"]
+    allowed_origins = ["*","https://www.${var.domain_name}"] // En realidad, seria solo nuestro domain_name
     expose_headers  = ["ETag"]
     max_age_seconds = 3000
   }
@@ -81,7 +97,7 @@ resource "aws_s3_bucket_website_configuration" "www" {
 resource "aws_s3_bucket_website_configuration" "root" {
   bucket = aws_s3_bucket.root.id
   redirect_all_requests_to {
-    host_name = "https://www.${var.domain_name}"
+    host_name = "https://www.wikipedia.com" // En realidad, iria a nuestro domain_name, pero no tenemos certificado
   }
 }
 module "template_files" {

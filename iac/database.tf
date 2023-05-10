@@ -33,7 +33,6 @@ resource "aws_dynamodb_table" "inventory" {
   dynamic "attribute" {
     for_each = local.attributes
     content {
-
       name = attribute.key
       type = attribute.value
     }

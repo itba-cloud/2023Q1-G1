@@ -18,7 +18,7 @@ provider "aws" {
 
 
 module "web_app_1" {
-  source = "../web-app-module"
+  source = "./web-app-module"
 
   # Input Variables
   domain_name      = var.domain_name

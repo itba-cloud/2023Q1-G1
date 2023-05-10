@@ -1,2 +1,8 @@
 
-// TODO: pensar en posibles outputs que serian utiles en un modulo web (id de buckets, url de cloudfront, etc)
+output "www_bucket_id" {
+  value = aws_s3_bucket.www.id
+}
+
+output "root_bucket_id" {
+    value = aws_s3_bucket.root.id
+}

@@ -1,6 +1,6 @@
 
 # resource "aws_iam_role" "api_action_role" {
-#   name = "example-lambda-role"
+#   name = "web_api_lambda"
 
 #   assume_role_policy = jsonencode({
 #     Version = "2012-10-17"
