@@ -64,7 +64,7 @@ resource "aws_lambda_function" "api_action" {
   handler       = "index.handler"
   runtime       = "nodejs14.x"
   filename      = "files/${each.value}"
-  role          = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/LabRole" // usamos LabRole porque no tenemos podemos crear roles o adjuntar policies
+  role          = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/LabRole" // usamos LabRole porque no podemos crear roles o adjuntar policies
 
   vpc_config {
     subnet_ids         = module.vpc.private_subnets
