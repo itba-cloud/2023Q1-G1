@@ -17,20 +17,25 @@ Se utilizan los módulos `hashicorp/dir/template`, `terraform-aws-modules/vpc/aw
 
 ### for_each
 - Se utiliza para poder definir un local de las variables y definir los [índices](https://github.com/Khato1319/cloud-inventory-management/blob/main/iac/database.tf#L26) y [atributos](https://github.com/Khato1319/cloud-inventory-management/blob/main/iac/database.tf#L26) de la tabla a partir del mismo sin tener que repetir los nombres.
-- 
+- Se utiliza en [```lambda.tf```](link) para poder iterar sobre archivos del directorio y comprimir todos los archivos de funciones lambda.
+- Se utiliza en [```lambda.tf```](link) para poder iterar sobre archivos del directorio y publicar los lambdas de cada archivo.
+- Se utiliza en [```cdn.tf```](link) para poder reusar la mayoría de la configuración de la distribución de CloudFront.
+- Se utiliza en [```storage.tf```](link) para poder reusar la configuración de los recursos asociados a los buckets raíz y de www.
+- Se utiliza 3n [```storage.tf```](link) para poder agreagr al bucket todos los archivos estáticos de la página web al bucket S3.
 ### depends_on
-- [Se utiliza para obtener el nombre del archivo sin la extensión del mismo](https://github.com/Khato1319/cloud-inventory-management/blob/main/iac/lambda.tf#LL63C3-L63C44)
-### count
-- [Se utiliza para obtener el nombre del archivo sin la extensión del mismo](https://github.com/Khato1319/cloud-inventory-management/blob/main/iac/lambda.tf#LL63C3-L63C44)
+- Se utiliza en ```dynamo.tf``` para crear la tabla antes de crear los targets de lectura/escritura
+- Se utiliza en ```dynamo.tf``` para crear los targets de lectura/escritura antes de la política de auto-scaling
+- Se utiliza en ```storage.tf``` para crear la configuración pública de los buckets antes del ACL y las policies (ya que en el default privado no es posible configurar ACLs o policies). TODO chequear
 ### lifecycle
-- [Se utiliza para obtener el nombre del archivo sin la extensión del mismo](https://github.com/Khato1319/cloud-inventory-management/blob/main/iac/lambda.tf#LL63C3-L63C44)
+- Agrega una capa de seguridad extra en [```database.tf```](link) para evitar borrados accidentales del inventario de los clientes.
+- Se utiliza en [```storage.tf```](link) para que un ```terraform apply``` en una arquitectura creada no aplique permisos públicos cuando el bucket es privado. El recurso se usa únicamente para permitir agregarle una política al bucket, pero el estado final del mismo queremos que sea privado.
 ## Descripción de funciones
-### template_file
-- [Se utiliza para obtener el nombre del archivo sin la extensión del mismo](https://github.com/Khato1319/cloud-inventory-management/blob/main/iac/lambda.tf#LL63C3-L63C44)
+### templatefile
+- Se utiliza en [```storage.tf```](link) para poder reutilizar la configuración de una bucket policy cambiando únicamente ciertos parámetros como la distribución de CloudFront y el nombre del bucket.
 ### jsonencode
-- [Se utiliza para obtener el nombre del archivo sin la extensión del mismo](https://github.com/Khato1319/cloud-inventory-management/blob/main/iac/lambda.tf#LL63C3-L63C44)
+- Se utiliza en ```vpc-endpoint.tf``` en [aws_vpc_endpoint](www.link.com) y en ```vpc-endpoint``` en [aws_iam_policy](www.link.com).
 ### fileset
-- [Se utiliza para obtener el nombre del archivo sin la extensión del mismo](https://github.com/Khato1319/cloud-inventory-management/blob/main/iac/lambda.tf#LL63C3-L63C44)
+- Se utiliza en ```lambda.tf``` en [archive_file](link) y en [aws_lambda_function](link).
 ### split
-- [Se utiliza para obtener el nombre del archivo sin la extensión del mismo](https://github.com/Khato1319/cloud-inventory-management/blob/main/iac/lambda.tf#LL63C3-L63C44)
+- Se utiliza en ```lambda.tf``` en [archive_file](link) y en [aws_lambda_function](link).
 

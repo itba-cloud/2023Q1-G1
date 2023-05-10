@@ -58,7 +58,6 @@ data "archive_file" "lambda" {
 data "aws_caller_identity" "current" {}
 
 resource "aws_lambda_function" "api_action" {
-
   for_each      = fileset("${path.module}/files", "*.zip")
   function_name = split(".", each.value)[0]
   handler       = "index.handler"
