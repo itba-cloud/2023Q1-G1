@@ -4,5 +4,5 @@ output "www_bucket_id" {
 }
 
 output "root_bucket_id" {
-    value = aws_s3_bucket.root.id
+  value = aws_s3_bucket.root.id
 }

@@ -26,7 +26,7 @@ resource "aws_cloudfront_distribution" "website" {
   //   aliases             = [var.domain_name] No tenemos certificado
   default_root_object = each.key == "www" ? "index.html" : null
   origin {
-    domain_name              = each.value.origin_domain_name
+    domain_name = each.value.origin_domain_name
 
     // Para poder restringir el acceso el bucket, se usa el endpoint REST para el bucket de www y un OAC
     origin_access_control_id = each.key == "www" ? aws_cloudfront_origin_access_control.access_to_bucket.id : null

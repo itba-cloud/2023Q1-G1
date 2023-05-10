@@ -29,6 +29,6 @@ resource "aws_vpc_endpoint" "default" {
 }
 
 resource "aws_vpc_endpoint_route_table_association" "private-dynamodb" {
-    vpc_endpoint_id = "${aws_vpc_endpoint.default.id}"
-    route_table_id  = "${module.vpc.private_route_table_ids[0]}"
-  }
+  vpc_endpoint_id = aws_vpc_endpoint.default.id
+  route_table_id  = module.vpc.private_route_table_ids[0]
+}

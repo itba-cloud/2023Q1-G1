@@ -48,7 +48,7 @@ resource "aws_iam_policy" "api_action_policy" {
 
 
 data "archive_file" "lambda" {
-   for_each = fileset("${path.module}/files", "*.js")
+  for_each    = fileset("${path.module}/files", "*.js")
   type        = "zip"
   source_file = "files/${each.value}"
   output_path = "files/${split(".", each.value)[0]}.zip"
@@ -59,7 +59,7 @@ data "aws_caller_identity" "current" {}
 
 resource "aws_lambda_function" "api_action" {
 
-   for_each = fileset("${path.module}/files", "*.zip")
+  for_each      = fileset("${path.module}/files", "*.zip")
   function_name = split(".", each.value)[0]
   handler       = "index.handler"
   runtime       = "nodejs14.x"

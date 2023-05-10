@@ -21,7 +21,7 @@ variable "environment_name" {
 
 variable "nextjs_export_directory" {
   description = "Static export directory of Web App"
-  type = string
+  type        = string
 }
 
 

@@ -18,12 +18,12 @@ provider "aws" {
 
 
 module "web_app_1" {
-  source = "./web-app-module"
+  source = "./web-app"
 
   # Input Variables
-  domain_name      = var.domain_name
-  app_name         = var.app_name
-  environment_name = var.environment_name
+  domain_name             = var.domain_name
+  app_name                = var.app_name
+  environment_name        = var.environment_name
   nextjs_export_directory = var.nextjs_export_directory
 }
 

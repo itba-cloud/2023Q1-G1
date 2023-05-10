@@ -73,7 +73,7 @@ resource "aws_appautoscaling_target" "read_target" {
   resource_id        = "table/${var.db_name}"
   scalable_dimension = "dynamodb:table:ReadCapacityUnits"
   service_namespace  = "dynamodb"
-  depends_on = [aws_dynamodb_table.inventory]
+  depends_on         = [aws_dynamodb_table.inventory]
 }
 
 resource "aws_appautoscaling_target" "write_target" {
@@ -82,7 +82,7 @@ resource "aws_appautoscaling_target" "write_target" {
   resource_id        = "table/${var.db_name}"
   scalable_dimension = "dynamodb:table:WriteCapacityUnits"
   service_namespace  = "dynamodb"
-  depends_on = [aws_dynamodb_table.inventory]
+  depends_on         = [aws_dynamodb_table.inventory]
 }
 
 resource "aws_appautoscaling_policy" "read_policy" {
