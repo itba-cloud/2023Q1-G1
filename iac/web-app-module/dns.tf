@@ -7,8 +7,8 @@ resource "aws_route53_record" "www" {
   name = var.domain_name
   type = "A"
   alias {
-    name = aws_s3_bucket_website_configuration.www_bucket_configuration.website_domain
-    zone_id = aws_s3_bucket.www_bucket.hosted_zone_id
+    name = aws_s3_bucket_website_configuration.www.website_domain
+    zone_id = aws_s3_bucket.www.hosted_zone_id
     evaluate_target_health = false
   }
 }

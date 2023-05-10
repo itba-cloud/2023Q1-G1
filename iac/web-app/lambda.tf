@@ -1,5 +1,5 @@
 
-# resource "aws_iam_role" "example_lambda_role" {
+# resource "aws_iam_role" "api_action_role" {
 #   name = "example-lambda-role"
 
 #   assume_role_policy = jsonencode({
@@ -17,15 +17,18 @@
 
 # }
 
-# resource "aws_iam_role_policy_attachment" "example_lambda_role_policy_attachment" {
-#   policy_arn = aws_iam_policy.example_lambda_policy.arn
-#   role       = aws_iam_role.example_lambda_role.name
+# resource "aws_iam_role_policy_attachment" "api_action_role_policy_attachment" {
+#   policy_arn = aws_iam_policy.api_action_policy.arn
+#   role       = aws_iam_role.api_action_role.name
 # } -> Se comenta porque no tenemos permisos para attachear policies o crear roles
 
 data "aws_iam_role" "lab_role" {
   name = "AWSServiceRoleForApplicationAutoScaling_DynamoDBTable"
 } // Usamos un role ya existente dado que no podemos crear roles
-resource "aws_iam_policy" "example_lambda_policy" {
+
+
+
+resource "aws_iam_policy" "api_action_policy" {
   name = "example-lambda-policy"
   policy = jsonencode({
     Version = "2012-10-17"
@@ -37,36 +40,38 @@ resource "aws_iam_policy" "example_lambda_policy" {
           "dynamodb:DeleteItem",
         ]
         Effect   = "Allow"
-        Resource = aws_dynamodb_table.inventory_table.arn
+        Resource = aws_dynamodb_table.inventory.arn
       }
     ]
   })
 }
 
 
-
 data "archive_file" "lambda" {
+   for_each = fileset("${path.module}/files", "*.js")
   type        = "zip"
-  source_file = "index.js"
-  output_path = "index.zip"
+  source_file = "files/${each.value}"
+  output_path = "files/${split(".", each.value)[0]}.zip"
 }
 
 
 data "aws_caller_identity" "current" {}
 
-resource "aws_lambda_function" "example_lambda" {
-  function_name = "example-lambda"
+resource "aws_lambda_function" "api_action" {
+
+   for_each = fileset("${path.module}/files", "*.zip")
+  function_name = split(".", each.value)[0]
   handler       = "index.handler"
   runtime       = "nodejs14.x"
-  filename      = "index.zip"
+  filename      = "files/${each.value}"
   role          = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/LabRole" // usamos LabRole porque no tenemos podemos crear roles o adjuntar policies
 
   vpc_config {
     subnet_ids         = module.vpc.private_subnets
-    security_group_ids = [aws_security_group.lambda_sg.id]
+    security_group_ids = [aws_security_group.api_lambdas.id]
   }
 }
-resource "aws_security_group" "lambda_sg" {
+resource "aws_security_group" "api_lambdas" {
   name        = "allow_tls"
   description = "Allow TLS inbound traffic"
   vpc_id      = module.vpc.vpc_id

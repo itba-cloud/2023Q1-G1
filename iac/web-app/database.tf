@@ -7,7 +7,7 @@ locals {
     timestamp = "N"
   }
 }
-resource "aws_dynamodb_table" "inventory_table" {
+resource "aws_dynamodb_table" "inventory" {
   name           = var.db_name
   billing_mode   = "PROVISIONED"
   read_capacity  = "30"
@@ -74,7 +74,7 @@ resource "aws_appautoscaling_target" "read_target" {
   resource_id        = "table/${var.db_name}"
   scalable_dimension = "dynamodb:table:ReadCapacityUnits"
   service_namespace  = "dynamodb"
-  depends_on = [aws_dynamodb_table.inventory_table]
+  depends_on = [aws_dynamodb_table.inventory]
 }
 
 resource "aws_appautoscaling_target" "write_target" {
@@ -83,7 +83,7 @@ resource "aws_appautoscaling_target" "write_target" {
   resource_id        = "table/${var.db_name}"
   scalable_dimension = "dynamodb:table:WriteCapacityUnits"
   service_namespace  = "dynamodb"
-  depends_on = [aws_dynamodb_table.inventory_table]
+  depends_on = [aws_dynamodb_table.inventory]
 }
 
 resource "aws_appautoscaling_policy" "read_policy" {

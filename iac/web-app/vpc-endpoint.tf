@@ -27,11 +27,7 @@ resource "aws_vpc_endpoint" "default" {
   })
 
 }
-# resource "aws_route" "dynamodb_endpoint" {
-#   route_table_id         = module.vpc.private_route_table_ids[0]
-#   destination_cidr_block = "com.amazonaws.${var.region}.dynamodb"
-#   vpc_endpoint_id        = aws_vpc_endpoint.default.id
-# }
+
 resource "aws_vpc_endpoint_route_table_association" "private-dynamodb" {
     vpc_endpoint_id = "${aws_vpc_endpoint.default.id}"
     route_table_id  = "${module.vpc.private_route_table_ids[0]}"
