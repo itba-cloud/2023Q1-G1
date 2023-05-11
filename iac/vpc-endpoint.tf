@@ -1,5 +1,5 @@
 
-resource "aws_vpc_endpoint" "default" {
+resource "aws_vpc_endpoint" "dynamodb" {
 
   vpc_id            = module.vpc.vpc_id
   service_name      = "com.amazonaws.${var.region}.dynamodb"
@@ -29,6 +29,6 @@ resource "aws_vpc_endpoint" "default" {
 }
 
 resource "aws_vpc_endpoint_route_table_association" "private-dynamodb" {
-  vpc_endpoint_id = aws_vpc_endpoint.default.id
+  vpc_endpoint_id = aws_vpc_endpoint.dynamodb.id
   route_table_id  = module.vpc.private_route_table_ids[0]
 }

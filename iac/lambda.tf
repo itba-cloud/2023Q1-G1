@@ -71,8 +71,8 @@ resource "aws_lambda_function" "api_action" {
   }
 }
 resource "aws_security_group" "api_lambdas" {
-  name        = "allow_tls"
-  description = "Allow TLS inbound traffic"
+  name        = "allow_dynamo_vpce_queries"
+  description = "Allow queries to dynamo through VPC endpoint"
   vpc_id      = module.vpc.vpc_id
 
   egress {
