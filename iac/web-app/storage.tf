@@ -24,7 +24,7 @@ resource "aws_s3_bucket_ownership_controls" "website" {
     object_ownership = "BucketOwnerPreferred"
   }
 }
-resource "aws_s3_bucket_public_access_block" "website" {
+resource "aws_s3_bucket_public_access_block" "website_allow_access" {
   for_each = local.bucket_ids
   bucket   = each.value
 
@@ -68,7 +68,7 @@ resource "aws_s3_bucket_acl" "website" {
   for_each   = local.bucket_ids
   bucket     = each.value
   acl        = "public-read"
-  depends_on = [aws_s3_bucket_public_access_block.website[0], aws_s3_bucket_public_access_block.website[1]]
+  depends_on = [aws_s3_bucket_public_access_block.website_allow_access]
 }
 
 resource "aws_s3_bucket_cors_configuration" "website" {

@@ -79,7 +79,7 @@ resource "aws_security_group" "api_lambdas" {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = aws_vpc_endpoint.default.cidr_blocks
+    cidr_blocks = aws_vpc_endpoint.dynamodb.cidr_blocks
   }
 
 
