@@ -12,13 +12,6 @@ variable "app_name" {
   default     = "web-app"
 }
 
-variable "environment_name" {
-  description = "Deployment environment"
-  type        = string
-  default     = "dev"
-}
-
-
 variable "nextjs_export_directory" {
   description = "Static export directory of Web App"
   type        = string

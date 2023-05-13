@@ -17,7 +17,7 @@ Se utilizan los módulos `hashicorp/dir/template`, `terraform-aws-modules/vpc/aw
 
 ### for_each
 - Se utiliza para poder definir un local de las variables y definir los [índices](https://github.com/Khato1319/cloud-inventory-management/blob/main/iac/database.tf#L26) y [atributos](https://github.com/Khato1319/cloud-inventory-management/blob/main/iac/database.tf#L26) de la tabla a partir del mismo sin tener que repetir los nombres.
-- Se utiliza en [```lambda.tf```](link) para poder iterar sobre archivos del directorio y comprimir todos los archivos de funciones lambda.
+- Se utiliza en [```lambda.tf```](https://github.com/Khato1319/cloud-inventory-management/blob/main/iac/lambda.tf#LL51C7-L51C7) para poder iterar sobre archivos del directorio y comprimir todos los archivos de funciones lambda.
 - Se utiliza en [```lambda.tf```](link) para poder iterar sobre archivos del directorio y publicar los lambdas de cada archivo.
 - Se utiliza en [```cdn.tf```](link) para poder reusar la mayoría de la configuración de la distribución de CloudFront.
 - Se utiliza en [```storage.tf```](link) para poder reusar la configuración de los recursos asociados a los buckets raíz y de www.
@@ -42,6 +42,6 @@ Se utilizan los módulos `hashicorp/dir/template`, `terraform-aws-modules/vpc/aw
 
 TODO:
 - Ver el tema de los valores del autoscaling de dynamo en database.tf
-- Completar links de funciones y metaargumentos.
+- Completar links de funciones y metaargumentos. -> Campa
 - Chequear la configuracion de los recursos desde la consola de AWS.
-- Armar el diagrama con los componentes de terraform (Lambda, VPC, VPC Endpoint, S3, Dynamo, CloudFront).
+- Armar el diagrama con los componentes de terraform (Lambda, VPC, VPC Endpoint, S3, Dynamo, CloudFront). -> Agus
