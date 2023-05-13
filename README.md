@@ -41,7 +41,7 @@ Se utilizan los módulos `hashicorp/dir/template`, `terraform-aws-modules/vpc/aw
 
 
 TODO:
-- Ver el tema de los valores del autoscaling de dynamo en database.tf
+- Ver el tema de los valores del autoscaling de dynamo en database.tf -> Clase de consulta
 - Completar links de funciones y metaargumentos. -> Campa
 - Chequear la configuracion de los recursos desde la consola de AWS.
 - Armar el diagrama con los componentes de terraform (Lambda, VPC, VPC Endpoint, S3, Dynamo, CloudFront). -> Agus
