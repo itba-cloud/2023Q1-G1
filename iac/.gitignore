@@ -32,4 +32,4 @@ override.tf.json
 # Ignore CLI configuration files
 .terraformrc
 terraform.rc
-web-app/files/*.zip
+./files/*.zip

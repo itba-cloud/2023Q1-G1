@@ -39,3 +39,9 @@ Se utilizan los módulos `hashicorp/dir/template`, `terraform-aws-modules/vpc/aw
 ### split
 - Se utiliza en ```lambda.tf``` en [archive_file](link) y en [aws_lambda_function](link).
 
+
+TODO:
+- Ver el tema de los valores del autoscaling de dynamo en database.tf
+- Completar links de funciones y metaargumentos.
+- Chequear la configuracion de los recursos desde la consola de AWS.
+- Armar el diagrama con los componentes de terraform (Lambda, VPC, VPC Endpoint, S3, Dynamo, CloudFront).

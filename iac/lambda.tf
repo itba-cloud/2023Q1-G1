@@ -21,13 +21,6 @@
 #   policy_arn = aws_iam_policy.api_action_policy.arn
 #   role       = aws_iam_role.api_action_role.name
 # } -> Se comenta porque no tenemos permisos para attachear policies o crear roles
-
-data "aws_iam_role" "lab_role" {
-  name = "AWSServiceRoleForApplicationAutoScaling_DynamoDBTable"
-} // Usamos un role ya existente dado que no podemos crear roles
-
-
-
 resource "aws_iam_policy" "api_action_policy" {
   name = "example-lambda-policy"
   policy = jsonencode({
