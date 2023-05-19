@@ -6,15 +6,21 @@ resource "aws_s3_bucket" "root" {
   bucket        = var.domain_name
   force_destroy = true
 }
+resource "aws_s3_bucket" "logs" {
+  bucket        = "logs.${var.domain_name}"
+  force_destroy = true
+}
 locals {
   bucket_ids = {
-    www  = aws_s3_bucket.www.id
-    root = aws_s3_bucket.root.id
+    www        = aws_s3_bucket.www.id
+    root       = aws_s3_bucket.root.id
+    logs       = aws_s3_bucket.logs.id
   }
 
   bucket_policies = {
-    www  = templatefile("${path.module}/files/s3-policy.json", { bucket = "www.${var.domain_name}", account_id = data.aws_caller_identity.current.account_id, cloudfront_id = aws_cloudfront_distribution.website["www"].id })
-    root = templatefile("${path.module}/files/s3-policy.json", { bucket = "${var.domain_name}", account_id = data.aws_caller_identity.current.account_id, cloudfront_id = aws_cloudfront_distribution.website["root"].id })
+    www        = templatefile("${path.module}/files/s3-policy.json", { bucket = "www.${var.domain_name}", account_id = data.aws_caller_identity.current.account_id, cloudfront_id = aws_cloudfront_distribution.website["www"].id })
+    root       = templatefile("${path.module}/files/s3-policy.json", { bucket = "${var.domain_name}", account_id = data.aws_caller_identity.current.account_id, cloudfront_id = aws_cloudfront_distribution.website["root"].id })
+    logs       = templatefile("${path.module}/files/s3-policy.json", { bucket = "logs.${var.domain_name}", account_id = data.aws_caller_identity.current.account_id, cloudfront_id = aws_cloudfront_distribution.website["logs"].id })
   }
 }
 resource "aws_s3_bucket_ownership_controls" "website" {
@@ -33,12 +39,11 @@ resource "aws_s3_bucket_public_access_block" "website_allow_access" {
   ignore_public_acls      = false
   restrict_public_buckets = false
 
-  depends_on = [aws_s3_bucket.root, aws_s3_bucket.www]
+  depends_on = [aws_s3_bucket.root, aws_s3_bucket.www, aws_s3_bucket.logs]
   lifecycle {
     ignore_changes = [block_public_acls, block_public_policy, ignore_public_acls, restrict_public_buckets]
   }
 }
-
 
 resource "aws_s3_bucket_public_access_block" "website_block_access" {
   for_each = local.bucket_ids
@@ -53,9 +58,6 @@ resource "aws_s3_bucket_public_access_block" "website_block_access" {
 }
 
 data "aws_caller_identity" "current" {}
-
-
-
 
 resource "aws_s3_bucket_policy" "website" {
   for_each = local.bucket_ids
@@ -100,11 +102,21 @@ resource "aws_s3_bucket_website_configuration" "root" {
     host_name = "https://www.wikipedia.com" // En realidad, iria a nuestro domain_name, pero no tenemos certificado
   }
 }
+resource "aws_s3_bucket_website_configuration" "logs" {
+  bucket = aws_s3_bucket.logs.id
+
+  index_document {
+    suffix = "index.html"
+  }
+
+  error_document {
+    key = "error.html"
+  }
+}
+
 module "template_files" {
-  source = "hashicorp/dir/template"
-
-  base_dir = var.nextjs_export_directory
-
+  source    = "hashicorp/dir/template"
+  base_dir  = var.nextjs_export_directory
 }
 
 resource "aws_s3_object" "website_files" {
@@ -115,4 +127,11 @@ resource "aws_s3_object" "website_files" {
   source       = each.value.source_path
   content      = each.value.content
   etag         = each.value.digests.md5
+}
+
+resource "aws_s3_bucket_logging" "logs_logging" {
+  bucket = aws_s3_bucket.logs.id
+
+  target_bucket = aws_s3_bucket.logs.id
+  target_prefix = "logs/"
 }
