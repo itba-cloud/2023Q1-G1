@@ -22,7 +22,7 @@
 #   role       = aws_iam_role.api_action_role.name
 # } -> Se comenta porque no tenemos permisos para attachear policies o crear roles
 resource "aws_iam_policy" "api_action_policy" {
-  name = "example-lambda-policy"
+  name = "api_action_policy"
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
