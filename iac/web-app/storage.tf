@@ -144,7 +144,7 @@ resource "aws_s3_bucket_website_configuration" "www" {
 resource "aws_s3_bucket_website_configuration" "root" {
   bucket = aws_s3_bucket.root.id
   redirect_all_requests_to {
-    host_name = "https://www.wikipedia.com" // En realidad, iria a nuestro domain_name, pero no tenemos certificado
+    host_name = "www.wikipedia.com" // En realidad, iria a nuestro domain_name, pero no tenemos certificado
   }
 }
 resource "aws_s3_bucket_website_configuration" "logs" {
