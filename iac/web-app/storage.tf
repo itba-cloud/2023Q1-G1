@@ -10,17 +10,55 @@ resource "aws_s3_bucket" "logs" {
   bucket        = "logs.${var.domain_name}"
   force_destroy = true
 }
+
+resource "aws_s3_bucket_versioning" "logs" {
+  bucket = aws_s3_bucket.logs.id
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
+resource "aws_s3_bucket_policy" "logs" {
+  bucket   = aws_s3_bucket.logs.id
+
+     policy = <<POLICY
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AllowCloudFrontToPutLogs",
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "cloudfront.amazonaws.com"
+      },
+      "Action": "s3:PutObject",
+      "Resource": "arn:aws:s3:::logs.${var.domain_name}/*",
+      "Condition": {
+        "StringEquals": {
+          "aws:SourceArn": [
+            "arn:aws:cloudfront::${data.aws_caller_identity.current.account_id}:distribution/${aws_cloudfront_distribution.website["root"].id}",
+            "arn:aws:cloudfront::${data.aws_caller_identity.current.account_id}:distribution/${aws_cloudfront_distribution.website["www"].id}"
+          ]
+        }
+      }
+    }
+  ]
+}
+POLICY
+}
 locals {
   bucket_ids = {
-    www        = aws_s3_bucket.www.id
-    root       = aws_s3_bucket.root.id
-    logs       = aws_s3_bucket.logs.id
+    www  = aws_s3_bucket.www.id
+    root = aws_s3_bucket.root.id
+  }
+
+  log_bucket_id = {
+    log = aws_s3_bucket.logs.id
   }
 
   bucket_policies = {
-    www        = templatefile("${path.module}/files/s3-policy.json", { bucket = "www.${var.domain_name}", account_id = data.aws_caller_identity.current.account_id, cloudfront_id = aws_cloudfront_distribution.website["www"].id })
-    root       = templatefile("${path.module}/files/s3-policy.json", { bucket = "${var.domain_name}", account_id = data.aws_caller_identity.current.account_id, cloudfront_id = aws_cloudfront_distribution.website["root"].id })
-    logs       = templatefile("${path.module}/files/s3-policy.json", { bucket = "logs.${var.domain_name}", account_id = data.aws_caller_identity.current.account_id, cloudfront_id = aws_cloudfront_distribution.website["logs"].id })
+    www  = templatefile("${path.module}/files/s3-policy.json", { bucket = "www.${var.domain_name}", account_id = data.aws_caller_identity.current.account_id, cloudfront_id = aws_cloudfront_distribution.website["www"].id })
+    root = templatefile("${path.module}/files/s3-policy.json", { bucket = "${var.domain_name}", account_id = data.aws_caller_identity.current.account_id, cloudfront_id = aws_cloudfront_distribution.website["root"].id })
   }
 }
 resource "aws_s3_bucket_ownership_controls" "website" {
@@ -46,7 +84,7 @@ resource "aws_s3_bucket_public_access_block" "website_allow_access" {
 }
 
 resource "aws_s3_bucket_public_access_block" "website_block_access" {
-  for_each = local.bucket_ids
+  for_each = merge(local.bucket_ids, local.log_bucket_id)
   bucket   = each.value
 
   block_public_acls       = true
@@ -115,8 +153,8 @@ resource "aws_s3_bucket_website_configuration" "logs" {
 }
 
 module "template_files" {
-  source    = "hashicorp/dir/template"
-  base_dir  = var.nextjs_export_directory
+  source   = "hashicorp/dir/template"
+  base_dir = var.nextjs_export_directory
 }
 
 resource "aws_s3_object" "website_files" {

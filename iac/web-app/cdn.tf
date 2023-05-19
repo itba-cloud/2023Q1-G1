@@ -15,10 +15,6 @@ locals {
     root = {
       origin_domain_name = aws_s3_bucket_website_configuration.root.website_endpoint
       origin_id          = "S3-${aws_s3_bucket.root.id}"
-    },
-    logs = {
-      origin_domain_name = aws_s3_bucket.logs.bucket_regional_domain_name
-      origin_id          = "S3-${aws_s3_bucket.logs.id}"
     }
   }
 }
@@ -27,7 +23,7 @@ resource "aws_cloudfront_distribution" "website" {
   for_each = local.distributions
   enabled  = true
   // aliases             = [var.domain_name] No tenemos certificado
-  default_root_object = each.key == "www" ? "index.html" : null
+  default_root_object = each.key == "www" ? "index.html" : "/wiki/aws"
   
   logging_config {
     bucket         = aws_s3_bucket.logs.bucket_domain_name
@@ -76,6 +72,6 @@ resource "aws_cloudfront_distribution" "website" {
   }
 
   viewer_certificate {
-    cloudfront_default_certificate = true
+    cloudfront_default_certificate = true // Utilizamos el certificado de cloudfront a pesar de que lo ideal seria generar o importar un certificado con ACM y habilitar un alias hacia nuestro dominio
   }
 }
