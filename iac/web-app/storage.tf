@@ -21,7 +21,7 @@ resource "aws_s3_bucket_versioning" "logs" {
 resource "aws_s3_bucket_policy" "logs" {
   bucket = aws_s3_bucket.logs.id
 
-  policy = <<POLICY
+  policy     = <<POLICY
 {
   "Version": "2012-10-17",
   "Statement": [
@@ -45,7 +45,7 @@ resource "aws_s3_bucket_policy" "logs" {
   ]
 }
 POLICY
-depends_on = [aws_s3_bucket_acl.logs]
+  depends_on = [aws_s3_bucket_acl.logs]
 }
 locals {
   bucket_ids = {
@@ -113,8 +113,8 @@ resource "aws_s3_bucket_acl" "website" {
 }
 
 resource "aws_s3_bucket_acl" "logs" {
-  bucket = aws_s3_bucket.logs.id
-  acl = "log-delivery-write"
+  bucket     = aws_s3_bucket.logs.id
+  acl        = "log-delivery-write"
   depends_on = [aws_s3_bucket_public_access_block.website_allow_access]
 }
 
