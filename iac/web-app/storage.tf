@@ -147,17 +147,6 @@ resource "aws_s3_bucket_website_configuration" "root" {
     host_name = "www.wikipedia.com" // En realidad, iria a nuestro domain_name, pero no tenemos certificado
   }
 }
-resource "aws_s3_bucket_website_configuration" "logs" {
-  bucket = aws_s3_bucket.logs.id
-
-  index_document {
-    suffix = "index.html"
-  }
-
-  error_document {
-    key = "error.html"
-  }
-}
 
 module "template_files" {
   source   = "hashicorp/dir/template"
