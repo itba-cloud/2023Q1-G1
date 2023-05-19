@@ -6,6 +6,7 @@ Se utilizan los módulos `hashicorp/dir/template`, `terraform-aws-modules/vpc/aw
 
 ## Componentes a analizar y diagrama de arquitectura
 ![Diagrama de arquitectura](architecture.jpeg)
+
 Los componentes a analizar son los siguientes:
 - Lambda
 - VPC Endpoint
