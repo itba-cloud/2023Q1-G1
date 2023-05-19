@@ -45,6 +45,7 @@ resource "aws_s3_bucket_policy" "logs" {
   ]
 }
 POLICY
+depends_on = [aws_s3_bucket_acl.logs]
 }
 locals {
   bucket_ids = {
@@ -62,14 +63,14 @@ locals {
   }
 }
 resource "aws_s3_bucket_ownership_controls" "website" {
-  for_each = local.bucket_ids
+  for_each = merge(local.bucket_ids, local.log_bucket_id)
   bucket   = each.value
   rule {
     object_ownership = "BucketOwnerPreferred"
   }
 }
 resource "aws_s3_bucket_public_access_block" "website_allow_access" {
-  for_each = local.bucket_ids
+  for_each = merge(local.bucket_ids, local.log_bucket_id)
   bucket   = each.value
 
   block_public_acls       = false
@@ -92,7 +93,7 @@ resource "aws_s3_bucket_public_access_block" "website_block_access" {
   ignore_public_acls      = true
   restrict_public_buckets = true
 
-  depends_on = [aws_s3_bucket_policy.website]
+  depends_on = [aws_s3_bucket_policy.website, aws_s3_bucket_policy.logs]
 }
 
 data "aws_caller_identity" "current" {}
@@ -105,9 +106,15 @@ resource "aws_s3_bucket_policy" "website" {
   depends_on = [aws_s3_bucket_acl.website]
 }
 resource "aws_s3_bucket_acl" "website" {
-  for_each   = local.bucket_ids
+  for_each   = merge(local.bucket_ids, local.log_bucket_id)
   bucket     = each.value
   acl        = "public-read"
+  depends_on = [aws_s3_bucket_public_access_block.website_allow_access]
+}
+
+resource "aws_s3_bucket_acl" "logs" {
+  bucket = aws_s3_bucket.logs.id
+  acl = "log-delivery-write"
   depends_on = [aws_s3_bucket_public_access_block.website_allow_access]
 }
 
