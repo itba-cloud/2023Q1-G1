@@ -23,9 +23,9 @@ Se utilizan los módulos `hashicorp/dir/template`, `terraform-aws-modules/vpc/aw
 - Se utiliza en [```storage.tf```](https://github.com/Khato1319/cloud-inventory-management/blob/8e233475712b3862220ed89dc98909841b2c19e5/iac/web-app/storage.tf#L28) para poder reusar la configuración de los recursos asociados a los buckets raíz y de www.
 - Se utiliza en [```storage.tf```](https://github.com/Khato1319/cloud-inventory-management/blob/8e233475712b3862220ed89dc98909841b2c19e5/iac/web-app/storage.tf#L21) para poder agreagar al bucket todos los archivos estáticos de la página web al bucket S3.
 ### depends_on
-- Se utiliza en ```dynamo.tf``` para crear la tabla antes de crear los targets de lectura/escritura
-- Se utiliza en ```dynamo.tf``` para crear los targets de lectura/escritura antes de la política de auto-scaling
-- Se utiliza en ```storage.tf``` para crear la configuración pública de los buckets antes del ACL y las policies (ya que en el default privado no es posible configurar ACLs o policies). TODO chequear
+- Se utiliza en [```database.tf```](https://github.com/Khato1319/cloud-inventory-management/blob/main/iac/database.tf#L73) para crear la tabla antes de crear los targets de lectura/escritura
+- Se utiliza en [```database.tf```](https://github.com/Khato1319/cloud-inventory-management/blob/main/iac/database.tf#L102) para crear los targets de lectura/escritura antes de la política de auto-scaling
+- Se utiliza en [```storage.tf```](https://github.com/Khato1319/cloud-inventory-management/blob/main/iac/database.tf#L102) para crear la configuración pública de los buckets antes del ACL. 
 ### lifecycle
 - Agrega una capa de seguridad extra en [```database.tf```](https://github.com/Khato1319/cloud-inventory-management/blob/8e233475712b3862220ed89dc98909841b2c19e5/iac/database.tf#L49) para evitar borrados accidentales del inventario de los clientes.
 - Se utiliza en [```storage.tf```](https://github.com/Khato1319/cloud-inventory-management/blob/8e233475712b3862220ed89dc98909841b2c19e5/iac/web-app/storage.tf#L37) para que un ```terraform apply``` en una arquitectura creada no aplique permisos públicos cuando el bucket es privado. El recurso se usa únicamente para permitir agregarle una política al bucket, pero el estado final del mismo queremos que sea privado.
@@ -39,9 +39,3 @@ Se utilizan los módulos `hashicorp/dir/template`, `terraform-aws-modules/vpc/aw
 ### split
 - Se utiliza en ```lambda.tf``` en [archive_file](https://github.com/Khato1319/cloud-inventory-management/blob/8e233475712b3862220ed89dc98909841b2c19e5/iac/lambda.tf#L47) y en [aws_lambda_function](https://github.com/Khato1319/cloud-inventory-management/blob/8e233475712b3862220ed89dc98909841b2c19e5/iac/lambda.tf#L55).
 
-
-TODO:
-- Ver el tema de los valores del autoscaling de dynamo en database.tf -> Clase de consulta
-- Completar links de funciones y metaargumentos. -> Campa
-- Chequear la configuracion de los recursos desde la consola de AWS.
-- Armar el diagrama con los componentes de terraform (Lambda, VPC, VPC Endpoint, S3, Dynamo, CloudFront). -> Agus
