@@ -24,13 +24,13 @@ resource "aws_cloudfront_distribution" "website" {
   enabled  = true
   // aliases             = [var.domain_name] No tenemos certificado
   default_root_object = each.key == "www" ? "index.html" : null
-  
+
   logging_config {
-    bucket         = aws_s3_bucket.logs.bucket_domain_name
+    bucket          = aws_s3_bucket.logs.bucket_domain_name
     include_cookies = false
-    prefix         = "logs/"
+    prefix          = "logs/"
   }
-  
+
   origin {
     domain_name = each.value.origin_domain_name
 
