@@ -19,9 +19,9 @@ resource "aws_s3_bucket_versioning" "logs" {
 }
 
 resource "aws_s3_bucket_policy" "logs" {
-  bucket   = aws_s3_bucket.logs.id
+  bucket = aws_s3_bucket.logs.id
 
-     policy = <<POLICY
+  policy = <<POLICY
 {
   "Version": "2012-10-17",
   "Statement": [
