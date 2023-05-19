@@ -40,3 +40,12 @@ Los componentes a analizar son los siguientes:
 ### split
 - Se utiliza en ```lambda.tf``` en [archive_file](https://github.com/Khato1319/cloud-inventory-management/blob/8e233475712b3862220ed89dc98909841b2c19e5/iac/lambda.tf#L47) y en [aws_lambda_function](https://github.com/Khato1319/cloud-inventory-management/blob/8e233475712b3862220ed89dc98909841b2c19e5/iac/lambda.tf#L55).
 
+## Rúbrica
+| Alumno  | Legajo  | Participación |
+| --- | --- | --- |
+| Ian James Arnott | 61267 | 25% |
+| Kevin Catino | 61643 | 25% |
+| Lautaro Campastri | 61644 | 25% |
+| Agustín Felipe Viscardi | 60778 | 25% |
+
+
