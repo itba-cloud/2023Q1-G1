@@ -24,7 +24,6 @@ resource "aws_cloudfront_distribution" "website" {
   enabled  = true
   // aliases             = [var.domain_name] No tenemos certificado
   default_root_object = each.key == "www" ? "index.html" : null
-  origin_path = each.key == "www" ? null : "/wiki/aws"
   
   logging_config {
     bucket         = aws_s3_bucket.logs.bucket_domain_name
